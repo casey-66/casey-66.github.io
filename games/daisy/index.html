@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>daisy</title>
+</head>
+<script>
+
+"use strict";
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+	const canvas = document.querySelector("canvas");
+	const model = document.getElementById("model");
+	const sprite = document.getElementById("sprite");
+	const antlers = document.getElementById("antlers");
+	
+	const ctx = canvas.getContext("2d");
+	
+	// draw ground
+	ctx.fillStyle = "#FFFFFF";
+	ctx.fillRect(10, 532, 880, 2);
+	
+	// bounds used for collision detection
+	const floor = canvas.clientHeight - model.clientHeight/2;
+	const leftwall = model.clientWidth/2 - 20;
+	const rightwall = canvas.clientWidth - model.clientWidth/2 + 20;
+	const ceiling = -500;
+	
+	// global variables
+	// (x,y) is daisy's position, (vx,vy) is her velocity, (rx,ry) is her angle,
+	// and av is her angular velocity.
+	let daisy = {x: 200, y: 400, vx: 3, vy: 0, rx: 0, ry: -1, av: 0};
+	
+	// snapdist is the distance between daisy and pos
+	let snapdist = 100;
+	
+	// while mouse held, (ux,uy) is the unit vector pointing from daisy to pos
+	// while mouse up, it picks up daisy's angular velocity instead
+	let ux = 0;
+	let uy = -1;
+	
+	// (grabx, graby) is the unit vector pointing in the direction daisy was grabbed from
+	let grabx = 0;
+	let graby = -1;
+	
+	// track the mouse
+	// pos is the last held mouse position relative to the canvas
+	let pos = {x: 300, y: 250};
+	let held = false;
+	
+	// frame counter
+	let frame = 0;
+	let aniframe = 0;
+	
+	// action
+	let spriteNamespace = "blink";
+	let action = "idle";
+	let distress = false;
+	const totalframes = {"blink": 32, "bonk": 4, "grab": 8, "sit": 14, "sitting": 64, "pet": 2, "standup": 13, "sitpet": 2, "groove": 16, "run": 32, "runleft": 32, "radio": 32};
+	const spritewidth = {"blink": 300, "bonk": 300, "grab": 300, "sit": 300, "sitting": 300, "pet": 300, "standup": 300, "sitpet": 300, "groove": 500, "run": 300, "runleft": 300, "radio": 300}
+	
+	
+	var pageInteraction = false;
+	
+	var sounds = {
+		bonk1: {buffer: null, source: null, gain: null, playing: false},
+		bonk2: {buffer: null, source: null, gain: null, playing: false},
+		bonk3: {buffer: null, source: null, gain: null, playing: false},
+		bonk4: {buffer: null, source: null, gain: null, playing: false},
+		bonk5: {buffer: null, source: null, gain: null, playing: false},
+		bonk6: {buffer: null, source: null, gain: null, playing: false},
+		bonk7: {buffer: null, source: null, gain: null, playing: false},
+		bonk8: {buffer: null, source: null, gain: null, playing: false},
+		bonk9: {buffer: null, source: null, gain: null, playing: false},
+		bonk10: {buffer: null, source: null, gain: null, playing: false},
+		bonk11: {buffer: null, source: null, gain: null, playing: false},
+		bonk12: {buffer: null, source: null, gain: null, playing: false},
+		bonk13: {buffer: null, source: null, gain: null, playing: false},
+		distress1: {buffer: null, source: null, gain: null, playing: false},
+		distress2: {buffer: null, source: null, gain: null, playing: false},
+		distress3: {buffer: null, source: null, gain: null, playing: false},
+		distress4: {buffer: null, source: null, gain: null, playing: false},
+		distress5: {buffer: null, source: null, gain: null, playing: false},
+		distress6: {buffer: null, source: null, gain: null, playing: false},
+		inquisitive1: {buffer: null, source: null, gain: null, playing: false},
+		inquisitive2: {buffer: null, source: null, gain: null, playing: false},
+		inquisitive3: {buffer: null, source: null, gain: null, playing: false},
+		inquisitive4: {buffer: null, source: null, gain: null, playing: false},
+		inquisitive5: {buffer: null, source: null, gain: null, playing: false},
+		pickup1: {buffer: null, source: null, gain: null, playing: false},
+		pickup2: {buffer: null, source: null, gain: null, playing: false},
+		pickup3: {buffer: null, source: null, gain: null, playing: false},
+		pickup4: {buffer: null, source: null, gain: null, playing: false},
+		pickup5: {buffer: null, source: null, gain: null, playing: false},
+		pickup6: {buffer: null, source: null, gain: null, playing: false},
+		pickup7: {buffer: null, source: null, gain: null, playing: false},
+		pickup8: {buffer: null, source: null, gain: null, playing: false},
+		pickup9: {buffer: null, source: null, gain: null, playing: false},
+		pickup10: {buffer: null, source: null, gain: null, playing: false},
+		pickup11: {buffer: null, source: null, gain: null, playing: false},
+		radio1: {buffer: null, source: null, gain: null, playing: false},
+		radio2: {buffer: null, source: null, gain: null, playing: false},
+		sit1: {buffer: null, source: null, gain: null, playing: false},
+		sit2: {buffer: null, source: null, gain: null, playing: false},
+		sit3: {buffer: null, source: null, gain: null, playing: false},
+		sit4: {buffer: null, source: null, gain: null, playing: false},
+		sit5: {buffer: null, source: null, gain: null, playing: false},
+		song1: {buffer: null, source: null, gain: null, playing: false},
+		song2: {buffer: null, source: null, gain: null, playing: false},
+		stand1: {buffer: null, source: null, gain: null, playing: false},
+		stand2: {buffer: null, source: null, gain: null, playing: false},
+		stand3: {buffer: null, source: null, gain: null, playing: false},
+		walking1: {buffer: null, source: null, gain: null, playing: false},
+		walking2: {buffer: null, source: null, gain: null, playing: false}
+	};
+	
+	var context = null;
+	
+	function loadSound(soundname, url) {
+		var request = new XMLHttpRequest();
+		request.open('GET', url, true);
+		request.responseType = 'arraybuffer';
+		
+		
+		if (soundname == 'pickup1') {
+			request.onload = function() {
+					context.decodeAudioData(request.response, function(bfr) {
+					sounds[soundname].buffer = bfr;
+					playSound(soundname);
+				});
+			}
+		} else {
+			request.onload = function() {
+					context.decodeAudioData(request.response, function(bfr) {
+					sounds[soundname].buffer = bfr;
+				});
+			}
+		}
+		request.send();
+	}
+	
+	function playSound(soundname, when=0) {
+		if (sounds[soundname].buffer) {
+			
+			sounds[soundname].source = context.createBufferSource();
+			sounds[soundname].source.buffer = sounds[soundname].buffer;
+			//sounds[soundname].source.connect(context.destination);
+			
+			sounds[soundname].gain = context.createGain();
+			sounds[soundname].source.connect(sounds[soundname].gain);
+			sounds[soundname].gain.connect(context.destination)
+			
+			
+			sounds[soundname].source.start(when);
+			
+			sounds[soundname].playing = true;
+			sounds[soundname].source.onended = function() {
+				sounds[soundname].playing = false;
+			};
+		}
+	}
+	
+	function fade(soundname, gain1, gain2, timesteps, progress=0) {
+		if (sounds[soundname].gain) {
+			if (progress <= timesteps) {
+				
+				sounds[soundname].gain.gain.value = gain1 + (gain2 - gain1)*(progress/timesteps);
+				
+				setTimeout(fade, 10, soundname, gain1, gain2, timesteps, progress+1);
+			} else {
+				stopSound(soundname);
+			}
+		}
+	}
+	
+	function stopSound(soundname) {
+		if (sounds[soundname].source) {
+			sounds[soundname].source.stop();
+		}
+	}
+	
+	
+	
+	// set up AudioContext after user interaction with page
+	antlers.addEventListener("mousedown", () => {
+		pageInteraction = true;
+		
+		try {
+			context = new AudioContext();
+		} catch(e) {
+			context = new webkitAudioContext();
+		}
+		
+		Object.keys(sounds).forEach((key) => {
+			loadSound(key, 'audio/' + key + '.mp3');
+		});
+		
+	}, {once: true});
+	
+	
+	
+	antlers.addEventListener("mousedown", (event) => {
+		if (event.buttons !== 1) return; // listen for left click only
+		
+		// update pos
+		pos.x = event.pageX - canvas.offsetLeft;
+		pos.y = event.pageY - canvas.offsetTop;
+		
+		// calculate u
+		ux = pos.x - daisy.x;
+		uy = pos.y - daisy.y;
+		let norm = Math.sqrt(ux*ux + uy*uy);
+		ux /= norm;
+		uy /= norm;
+		
+		// set snapdist, which won't be updated until the next mousedown
+		snapdist = norm;
+		
+		// set grab
+		let theta = Math.acos(ux) * Math.sign(uy) - Math.acos(daisy.rx) * Math.sign(daisy.ry);
+		grabx = Math.sin(theta);
+		graby = -Math.cos(theta);
+		
+		held = true;
+		antlers.style.cursor = "grabbing";
+		
+		
+		// force stop activity
+		if (action == "run1" || action == "runleft1") {
+			fade('walking1', 1.0, 0.0, 10);
+		} else
+		if (action == "run2" || action == "runleft2") {
+			fade('walking2', 1.0, 0.0, 10);
+		}
+		if (action == "groove1") {
+			fade('song1', 1.0, 0.0, 10);
+		} else
+		if (action == "groove2") {
+			fade('song2', 1.0, 0.0, 10);
+		}
+		if (action == "radio1") {
+			fade('radio1', 1.0, 0.0, 10);
+		} else
+		if (action == "radio2") {
+			fade('radio2', 1.0, 0.0, 10);
+		}
+		
+		// force stop distress
+		if (distress) {
+			fade('distress' + distress, 1.0, 0.0, 10);
+			distress = false;
+		}
+		
+		// do the grab
+		antlers.style.top = "15px";
+		action = "grab";
+		if (daisy.y >= floor) {
+			spriteNamespace = "pet";
+		} else {
+			spriteNamespace = "grab";
+		}
+		
+		playSound('pickup' + (1+Math.floor(11*Math.random())));
+		
+	});
+	
+	document.addEventListener("mouseup", (event) => {
+		held = false;
+		antlers.style.cursor = "grab";
+		
+		// daisy bonks if released while spinning too fast, otherwise flies
+		if (action == "grab") {
+			if (daisy.av > 0.2) {
+				aniframe = 0;
+				action = "bonk";
+				spriteNamespace = "bonk";
+			} else {
+				action = "fly";
+			}
+		}
+		
+	});
+	
+	document.addEventListener("mousemove", (event) => {
+		if (!held) return;
+		
+		pos.x = event.pageX - canvas.offsetLeft;
+		pos.y = event.pageY - canvas.offsetTop;
+	});
+	
+	
+	var blurred = false;
+	var exited = false;
+	window.onblur = function () {
+		blurred = true;
+	}
+	
+	window.onfocus = function () {
+		blurred = false;
+		
+		if (exited) {
+			exited = false;
+			loop();
+		}
+	}
+	
+	loop();
+	function loop() {
+		
+		// gravity
+		daisy.vy += 0.1;
+		
+		if (held) {
+			// while the mouse is held,
+			// daisy swings a constant distance away from pos
+			// in a pendulum motion
+			
+			// calculate u
+			ux = pos.x - daisy.x;
+			uy = pos.y - daisy.y;
+			let norm = Math.sqrt(ux*ux + uy*uy);
+			ux /= norm;
+			uy /= norm;
+			
+			// let t be perpendicular to u
+			let tx = -uy;
+			let ty = ux;
+			
+			// cancel speed
+			let dot = daisy.vx * tx + daisy.vy * ty;
+			daisy.vx = tx * dot;
+			daisy.vy = ty * dot;
+			
+			// move
+			daisy.x += daisy.vx;
+			daisy.y += daisy.vy;
+			
+			// recalculate u
+			ux = pos.x - daisy.x;
+			uy = pos.y - daisy.y;
+			norm = Math.sqrt(ux*ux + uy*uy);
+			ux /= norm;
+			uy /= norm;
+			
+			// snap
+			let newx = pos.x - snapdist*ux;
+			let newy = pos.y - snapdist*uy;
+			let dnewx = newx - daisy.x;
+			let dnewy = newy - daisy.y;
+			
+			daisy.x += dnewx;
+			daisy.y += dnewy;
+			daisy.vx += dnewx;
+			daisy.vy += dnewy;
+			
+			// calculate angular velocity in case we release the mouse next frame
+			daisy.av = Math.atan((daisy.vx * (-uy) + daisy.vy * ux) / snapdist);
+			
+		} else {
+			// while the mouse isn't held,
+			// daisy moves around freely according to her speed
+			// and spins according to her angular velocity
+			
+			// move
+			daisy.x += daisy.vx;
+			daisy.y += daisy.vy;
+			
+			// u is rotated according to daisy's angular velocity
+			let ux2 = ux * Math.cos(-daisy.av) - uy * Math.sin(-daisy.av);
+			let uy2 = ux * Math.sin(-daisy.av) + uy * Math.cos(-daisy.av);
+			ux = ux2;
+			uy = uy2;
+			
+			// angular velocity friction
+			daisy.av *= 0.995;
+		}
+		
+		// floor collision
+		if (daisy.y > floor) {
+			daisy.y = floor;
+			if (!held && daisy.vy*daisy.vy > 100) {
+				playSound('bonk' + (1 + Math.floor(13*Math.random())))
+			}
+			daisy.vy *= -0.7;
+			daisy.av *= Math.sign(daisy.av) * Math.sign(daisy.rx) * 0.8;
+			daisy.av += daisy.rx/50;
+		}
+		
+		// ceiling collision
+		if (daisy.y < ceiling) {
+			daisy.y = ceiling;
+			if (!held && daisy.vy*daisy.vy > 4000) {
+				aniframe = 0;
+				action = "bonk";
+				spriteNamespace = "bonk";
+			}
+			if (!held && daisy.vy*daisy.vy > 100) {
+				playSound('bonk' + (1 + Math.floor(13*Math.random())))
+			}
+			
+			daisy.vy *= -0.1;
+		}
+		
+		// wall collision
+		if (daisy.x > rightwall) {
+			daisy.x = rightwall;
+			if (!held && daisy.vx*daisy.vx > 4000) {
+				aniframe = 0;
+				action = "bonk";
+				spriteNamespace = "bonk";
+			}
+			if (!held && daisy.vx*daisy.vx > 100) {
+				playSound('bonk' + (1 + Math.floor(13*Math.random())))
+			}
+			daisy.vx *= -0.7;
+			daisy.av *= -0.8;
+		}
+		if (daisy.x < leftwall) {
+			daisy.x = leftwall;
+			if (!held && daisy.vx*daisy.vx > 4000) {
+				aniframe = 0;
+				action = "bonk";
+				spriteNamespace = "bonk";
+			}
+			if (!held && daisy.vx*daisy.vx > 100) {
+				playSound('bonk' + (1 + Math.floor(13*Math.random())))
+			}
+			daisy.vx *= -0.7;
+			daisy.av *= -0.8;
+		}
+		
+		// friction
+		if (daisy.y < floor) {
+			daisy.vx *= 0.995;
+			daisy.vy *= 0.995;
+		} else {
+			// increased vx friction while on floor
+			daisy.vx *= 0.8;
+			daisy.vy *= 0.995;
+		}
+		
+		// set daisy rotation
+		let theta = Math.acos(ux) * Math.sign(uy) - Math.acos(grabx) * Math.sign(graby);
+		daisy.rx = Math.sin(theta);
+		daisy.ry = -Math.cos(theta);
+		
+		// update model styling
+		model.style.left = canvas.offsetLeft + daisy.x - 75 + "px";
+		model.style.top = canvas.offsetTop + daisy.y - 100 + "px";
+		
+		let rotate = Math.acos(-daisy.ry) * Math.sign(daisy.rx);
+		model.style.transform = "rotate(" + rotate + "rad)";
+		
+		
+		
+		
+		if (!distress && action == "bonk" && aniframe >= 6) {
+			distress = 1 + Math.floor(6*Math.random());
+			playSound('distress' + distress);
+		}
+		
+		if (action == "grab" || action == "fly") {
+			if (daisy.ry < -0.8 && (daisy.y >= floor || (daisy.y >= floor - 10 && spriteNamespace == "pet"))) {
+				spriteNamespace = "pet";
+			} else {
+				spriteNamespace = "grab";
+			}
+		}
+		
+		if (action == "fly") {
+			if (daisy.ry < -0.9 && Math.abs(daisy.av) < 0.0001) {
+				aniframe = 0;
+				action = "idle";
+				spriteNamespace = "blink";
+			}
+		}
+		if (action == "bonk") {
+			if (daisy.ry < -0.9 && Math.abs(daisy.av) < 0.0001) {
+				aniframe = 0;
+				action = "recover";
+				spriteNamespace = "pet";
+				
+				if (distress) {
+					fade('distress' + distress, 1.0, 0.0, 10);
+					distress = false;
+				}
+				
+				playSound('inquisitive' + (1 + Math.floor(5*Math.random())))
+				
+			}
+		}
+		
+		
+		
+		// count each 10ms frame
+		// each aniframe is 12 frames
+		frame += 1;
+		frame %= 12;
+		if (frame == 0) {
+			// this stuff happens every aniframe
+			aniframe += 1;
+			
+			// if daisy is idle on aniframe 0, she might do an activity
+			if (pageInteraction && action == "idle") {
+				if (aniframe % totalframes[spriteNamespace] == 0) {
+					
+					// run
+					if (Math.random() < 0.15) {
+						if (daisy.x < 450) {
+							if (Math.random () < 0.5) {
+								aniframe = 0;
+								action = "run1";
+								spriteNamespace = "run";
+								playSound('walking1');
+							} else {
+								aniframe = 0;
+								action = "run2";
+								spriteNamespace = "run";
+								playSound('walking2');
+							}
+						} else {
+							if (Math.random () < 0.5) {
+								aniframe = 0;
+								action = "runleft1";
+								spriteNamespace = "runleft";
+								playSound('walking1');
+							} else {
+								aniframe = 0;
+								action = "runleft2";
+								spriteNamespace = "runleft";
+								playSound('walking2');
+							}
+						}
+					}
+					
+					// groove
+					else if (Math.random() < 0.15) {
+						if (Math.random() < 0.6) {
+							aniframe = 0;
+							action = "groove1";
+							spriteNamespace = "groove";
+							playSound('song1');
+						} else {
+							aniframe = 0;
+							action = "groove2";
+							spriteNamespace = "groove";
+							playSound('song2');
+						}
+					}
+					
+					// radio
+					else if (Math.random() < 0.15) {
+						if (Math.random() < 0.4) {
+							aniframe = 0;
+							action = "radio1";
+							spriteNamespace = "radio";
+							playSound('radio1');
+						} else {
+							aniframe = 0;
+							action = "radio2";
+							spriteNamespace = "radio";
+							playSound('radio2');
+						}
+					}
+					
+					// sit
+					else if (Math.random() < 0.15) {
+						aniframe = 0;
+						action = "sit";
+						spriteNamespace = "sit";
+						playSound('sit1');
+					}
+					
+					
+				}
+			}
+			
+			// sitting & standup transitions
+			if (action == "sit") {
+				antlers.style.top = [15,15,13,12,10,12,13,17,24,33,46,46,46,46][aniframe] + "px";
+			}
+			if (action == "sit" && aniframe == 14) {
+				aniframe = 0;
+				action = "sitting";
+				spriteNamespace = "sitting";
+			}
+			if (action == "sitting" && aniframe >= 64) {
+				aniframe = 0;
+				action = "standup";
+				spriteNamespace = "standup";
+				playSound('stand1');
+			}
+			if (action == "standup") {
+				antlers.style.top = [46,46,33,24,17,13,12,10,12,13,15,15,15][aniframe] + "px";
+			}
+			if (action == "standup" && aniframe == 13) {
+				aniframe = 0;
+				action = "idle";
+				spriteNamespace = "blink";
+			}
+			
+			
+			// stop activities
+			
+			if (action == "run1") {
+				if (aniframe > 36 || daisy.x == rightwall || (aniframe > 12 && Math.random() < 0.015)) {
+					aniframe = 0;
+					action = "idle";
+					spriteNamespace = "blink";
+					fade('walking1', 1.0, 0.0, 10);
+				}
+			}
+			if (action == "run2") {
+				if (aniframe > 36 || daisy.x == rightwall || (aniframe > 12 && Math.random() < 0.015)) {
+					aniframe = 0;
+					action = "idle";
+					spriteNamespace = "blink";
+					fade('walking2', 1.0, 0.0, 10);
+				}
+			}
+			if (action == "runleft1") {
+				if (aniframe > 36 || daisy.x == leftwall || (aniframe > 12 && Math.random() < 0.015)) {
+					aniframe = 0;
+					action = "idle";
+					spriteNamespace = "blink";
+					fade('walking1', 1.0, 0.0, 10);
+				}
+			}
+			if (action == "runleft2") {
+				if (aniframe > 36 || daisy.x == leftwall || (aniframe > 12 && Math.random() < 0.015)) {
+					aniframe = 0;
+					action = "idle";
+					spriteNamespace = "blink";
+					fade('walking2', 1.0, 0.0, 10);
+				}
+			}
+			if (action == "groove1" && aniframe >= 128) {
+				aniframe = 0;
+				action = "idle";
+				spriteNamespace = "blink";
+				fade('song1', 1.0, 0.0, 20);
+			}
+			if (action == "groove2" && aniframe >= 208) {
+				aniframe = 0;
+				action = "idle";
+				spriteNamespace = "blink";
+				fade('song2', 1.0, 0.0, 20);
+			}
+			if (action == "radio1" && aniframe >= 88) {
+				aniframe = 0;
+				action = "idle";
+				spriteNamespace = "blink";
+				fade('radio1', 1.0, 0.0, 20);
+			}
+			if (action == "radio2" && aniframe >= 152) {
+				aniframe = 0;
+				action = "idle";
+				spriteNamespace = "blink";
+				fade('radio2', 1.0, 0.0, 20);
+			}
+			
+			
+			// finish recover
+			if (action == "recover" && aniframe >= 4) {
+				aniframe = 0;
+				action = "idle";
+				spriteNamespace = "blink";
+			}
+			
+			
+			
+		}
+		
+		sprite.src = "sprite/" + spriteNamespace + "/" + aniframe % totalframes[spriteNamespace] + ".png";
+		sprite.width = spritewidth[spriteNamespace] / 2;
+		
+		
+		if ((action == "run1" || action == "run2") && aniframe > 0) {
+			daisy.x += 1;
+		}
+		if ((action == "runleft1" || action == "runleft2") && aniframe > 0) {
+			daisy.x -= 1;
+		}
+		
+		
+		if (!blurred || Object.values(sounds).some((v) => v.playing)) {
+			setTimeout(loop, 10);
+		} else {
+			exited = true;
+		}
+		
+	}
+	
+	
+	
+	
+});
+
+</script>
+<style>
+
+body {
+	background-color: black;
+	color: white;
+}
+
+.main {
+	font-family: 'Verdana', sans-serif;
+	line-height: 1.4em;
+	margin: auto;
+	max-width: 900px;
+}
+
+h1 {
+	font-weight: normal;
+}
+
+canvas {
+	position: absolute;
+	/*background: rgba(0,255,0,0.1);
+	box-shadow: inset 0px 0px 0px 1px green;*/
+	
+    user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+#model {
+	position: absolute;
+	width: 150px;
+	height: 200px;
+	
+	/*border: 1px solid green;*/
+}
+
+#centerer {
+	display: flex;
+	justify-content: center;
+}
+
+#sprite {
+	position: absolute;
+	user-drag: none;
+    -webkit-user-drag: none;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	
+	/*border: 1px solid red;*/
+}
+
+#antlers {
+	position: relative;
+	width: 135px;
+	height: 50px;
+	
+	/*border: 1px solid blue;*/
+}
+
+</style>
+<body>
+	
+	<div class="main">
+		<h1>daisy</h1>
+		<p>play with her, pick her up, throw her</p>
+		<canvas width="900" height="550" style=""></canvas>
+		
+		<div id="model">
+			<div id="centerer">
+				<img id="sprite" src="sprite/blink/0.png" width="150" height="200" draggable=false></img>
+			</div>
+			<div id="antlers" style="cursor: grab; left: 15px; top: 15px;">
+			</div>
+		</div>
+		
+	</div>
+</body>
+</html>

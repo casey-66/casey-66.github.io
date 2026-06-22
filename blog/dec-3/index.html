@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Casey's Website</title>
+	<link rel="icon" href="/images/favicon.gif">
+	<link rel="stylesheet" href="/draw/draw-canvas.css">
+	<link rel="stylesheet" href="/draw/draw-toolbar.css">
+	<link rel="stylesheet" href="/style.css">
+</head>
+<script src="/draw/draw.js"></script>
+<body>
+	<div class="wrapper">
+		<div id="bg-left">
+			<canvas class="erasable pickable image vtile" data-src="/images/tile-left.png"></canvas>
+		</div>
+		<div id="bg-right">
+			<canvas class="erasable pickable image vtile" data-src="/images/tile-right.png"></canvas>
+		</div>
+		<div id="foreground-canvases"></div>
+		<div class="main">
+			<h1>December 3rd</h1>
+			<!-- <div class="entry"> -->
+        okay yeah so umm what happened is i kinda went off on her about not starting hormones with me and like i GET that its her decisions but i know that its what she wants and i know that its good for her and i KNOW that it will be way easier for her than me<br><br>i dunno i felt neglected, like i really let her know how much i wanted to do this together and i feel like she never gets it and every time i try to tell her how i feel im met with this apathy that just makes me sick<br><br>i think i have to go a while without talking to her, ive kinda had this thought in the back of my mind that we don’t deserve each other, im not good enough for her and shes not good enough for me, its paradoxical but its starting to make sense to me, maybe we both need something else
+				<nav class="blog-nav">
+          <a href="/blog/dec-2">← prev</a>
+					<a href="/blog">back to archive</a>
+          <a href="/blog/dec-9">next →</a>
+				</nav>
+			<!-- </div> -->
+			
+			<div class="toolbar">
+				<div class="tools">
+					<button class="tool" id="eyedropper-button"><img src="/draw/images/toolbar/eyedropper.png"></button>
+					<button class="tool" id="eraser-button"><img src="/draw/images/toolbar/eraser.png"></button>
+					<button class="tool" id="pencil-button"><img src="/draw/images/toolbar/pencil.png"></button>
+					<button class="tool" id="brush-button"><img src="/draw/images/toolbar/brush.png"></button>
+				</div>
+				<div class="options">
+					<div class="brushes">
+						<button class="brush" id="brush-large-circle"><img src="/draw/images/toolbar/brush-large-circle.png"></button>
+						<button class="brush" id="brush-small-circle"><img src="/draw/images/toolbar/brush-small-circle.png"></button>
+						<button class="brush" id="brush-oblique"><img src="/draw/images/toolbar/brush-oblique.png"></button>
+						<button class="brush" id="brush-large-square"><img src="/draw/images/toolbar/brush-large-square.png"></button>
+						<button class="brush" id="brush-small-square"><img src="/draw/images/toolbar/brush-small-square.png"></button>
+						<button class="brush" id="brush-smaller-square"><img src="/draw/images/toolbar/brush-smaller-square.png"></button>
+					</div>
+				</div>
+				<div class="palette">
+					<input id="color-input" type="color" value="#000000"></input>
+					<div class="color-preview"></div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</body>
+</html>

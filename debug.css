@@ -1,0 +1,20 @@
+/* linked as a stylesheet on /home and the blog pages, for debugging purposes */
+/*
+
+div {
+	box-shadow: inset 0px 0px 0px 1px red;
+}
+
+p {
+	box-shadow: inset 0px 0px 0px 1px blue;
+}
+
+span {
+	box-shadow: inset 0px 0px 0px 1px green;
+}
+
+canvas {
+	background: rgba(0,255,0,0.1);
+	box-shadow: inset 0px 0px 0px 1px green;
+}
+/**/

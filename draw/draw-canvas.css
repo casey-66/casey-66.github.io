@@ -1,0 +1,67 @@
+
+body {
+	margin: 0;
+}
+
+.hidden {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.wrapper {
+	position: relative;
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+.halfpage {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	overflow: hidden;
+	pointer-events: none;
+	width: 50%;
+}
+
+.halfpage.left {
+	left: 0;
+}
+
+.halfpage.right {
+	left: 50%;
+}
+
+canvas {
+	z-index: 0; /* required for z-index sorting */
+	image-rendering: pixelated;
+	/* image-rendering: crisp-edges; */
+}
+
+.halfpage canvas {
+	z-index: 100;
+	position: absolute;
+	pointer-events: none;
+}
+
+.anchor {
+	display: inline-block;
+	position: relative;
+	vertical-align: bottom;
+}
+
+.anchor * {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 0;
+}
+
+.anchor canvas {
+	z-index: 1;
+	pointer-events: none;
+}
+
+.stack :not(:last-child) {
+	position: absolute;
+	/* z-index: -1; */
+}

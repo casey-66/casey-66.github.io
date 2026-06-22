@@ -1,0 +1,37 @@
+body {  
+	font-family: 'Courier New', monospace;
+	background: black;
+	margin: 0;
+}
+
+.container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  --img-width: min(100vw, 133.333vh);
+}
+
+.container img {
+  width: var(--img-width);
+  height: calc(var(--img-width) * 0.75);
+}
+
+#secret {
+  overflow: hidden;
+	font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  position: absolute;
+  bottom: calc((100vh - var(--img-width) * 0.75) / 2 + var(--img-width) * 0.05);
+  left: calc((100vw - var(--img-width)) / 2);
+  height: calc(var(--img-width * 0.3));
+  width: calc(var(--img-width) * 1.0);
+  font-size: calc(var(--img-width) / 10);
+  letter-spacing: calc(var(--img-width) * 0.135);
+  padding-left: calc(var(--img-width) * 0.08);
+  background: none;
+  border: none;
+  outline: none;
+}

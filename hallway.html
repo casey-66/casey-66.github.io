@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="/style.css">
+	<script src="/bgmusic.js"></script>
+	<meta charset="UTF-8">
+	<title>hallway</title>
+</head>
+<script>
+
+const root = document.querySelector(':root');
+
+var held = {'w': false, 'a': false, 's': false, 'd': false};//, 'ArrowUp': false, 'ArrowLeft': false, 'ArrowDown': false, 'ArrowRight': false};
+var playing = false;
+var pos = {x: 30, z: 50, vx: 0, vz: 0, r:70, vr: 0};
+//var pos = {x: -7000, z: -2300, vx: 0, vz: 0, r:70, vr: 0}; // end
+var slip = 0.7000000000000001;
+var pulse_timer = 0;
+var pulse_speed = 6;
+
+var opacity = 100;
+
+var flag1 = false;
+
+var wallpn;
+var walloq;
+var wallfc;
+var walleg;
+
+document.addEventListener("DOMContentLoaded", () => {
+	
+	root.style.setProperty('--opacity', `${opacity}%`);
+	
+	wallpn = document.getElementById('pn');
+	walloq = document.getElementById('oq');
+	wallfc = document.getElementById('fc');
+	walleg = document.getElementById('eg');
+	
+	loop();
+
+});
+
+
+const walls = {
+	destroy: {ax: 760, az: -500, bx: 520, bz: -500}, //destroy
+	1: {ax: 520, az: -500, bx: -240, bz: -500},
+	2:{ax: -240, az: -500, bx: -240, bz: 1500},
+	3:{ax: 240, az: -20, bx: 340, bz: -20},
+	4:{ax: 240, az: 1500, bx: 240, bz: -20},
+	5:{ax: -240, az: 1500,  bx: 240, bz: 1500},
+	6:{ax: 760, az: 420, bx: 760, bz: -1460},
+	7:{ax: 340, az: 420, bx: 760, bz: 420},
+	8:{ax: 340, az: -20, bx: 340, bz: 420},
+	9:{ax: 520, az: -600, bx: 520, bz: -500},
+	10:{ax: 280, az: -600, bx: 520, bz: -600},
+	11:{ax: 280, az: -980, bx: 280, bz: -600},
+	12:{ax: 760, az: -1460, bx: -760, bz: -1460}, //tamp1
+	13:{ax: -760, az: -980, bx: 280, bz: -980}, //tamp2
+	
+	//bside
+	14:{ax: -760, az: -500, bx: -760, bz: -980},
+	15:{ax: -1240, az: -500, bx: -760, bz: -500},
+	16:{ax: -1240, az: -2540, bx: -1240, bz: -500},
+	17:{ax: -2320, az: -2820, bx: -1240, bz: -2540},
+	18:{ax: -2560, az: -1860, bx: -2320, bz: -2820},
+	19:{ax: -3520, az: -2060, bx: -2560, bz: -1860},
+	pn:{ax: -3520, az: 220, bx: -3520, bz: -2060}, //p→n
+	21:{ax: -2440, az: 220, bx: -3520, bz: 220},
+	22:{ax: -2680, az: 1300, bx: -2440, bz: 220},
+	23:{ax: -2200, az: 1420, bx: -2680, bz: 1300}, //w→u
+	24:{ax: -1960, az: 460, bx: -2200, bz: 1420},
+	25:{ax: -1960, az: -740, bx: -1960, bz: 460},
+	fc:{ax: -4960, az: -740, bx: -1960, bz: -740}, //f→c
+	27:{ax: -4960, az: -2900, bx: -4960, bz: -740},
+	28:{ax: -6880, az: -2900, bx: -4960, bz: -2900},
+	29:{ax: -6880, az: -2180, bx: -6880, bz: -2900},
+	
+	//end
+	endleft:{ax: -7360, az: -2180, bx: -7235, bz: -2180},
+	endright:{ax: -7005, az: -2180, bx: -6880, bz: -2180},
+	
+	end1:{ax: -6880, az: -2120, bx: -7360, bz: -2120},
+	end2:{ax: -6880, az: -1700, bx: -6880, bz: -2180,},
+	end3:{ax: -7360, az: -1700, bx: -6880, bz: -1700},
+	end4:{ax: -7360, az: -2180, bx: -7360, bz: -1700},
+	
+	//aside
+	31:{ax: -760, az: -1460, bx: -760, bz: -2900},
+	32:{ax: -760, az: -2900, bx: -2680, bz: -3380},
+	33:{ax: -2680, az: -3380, bx: -2920, bz: -2420},
+	34:{ax: -2920, az: -2420, bx: -4000, bz: -2660},
+	oq:{ax: -4000, az: -2660, bx: -4000, bz: 700}, //o→q
+	36:{ax: -4000, az: 700, bx: -3040, bz: 700},
+	37:{ax: -3040, az: 700, bx: -3280, bz: 1660},
+	38:{ax: -3280, az: 1660, bx: -1840, bz: 2020},
+	39:{ax: -1840, az: 2020, bx: -1480, bz: 580},
+	40:{ax: -1480, az: 580, bx: -1480, bz: -1700},
+	41:{ax: -1480, az: -1700, bx: -1960, bz: -1700},
+	42:{ax: -1960, az: -1700, bx: -1960, bz: -1220},
+	eg:{ax: -1960, az: -1220, bx: -4480, bz: -1220}, //e→g
+	44:{ax: -4480, az: -1220, bx: -4480, bz: -3380},
+	45:{ax: -4480, az: -3380, bx: -7360, bz: -3380},
+	46:{ax: -7360, az: -3380, bx: -7360, bz: -2180}
+	
+};
+
+function loop() {
+	const slipoutput = document.getElementById('slip');
+	slipoutput.innerHTML = `${slip}`;
+	
+	if (held.w || held.ArrowUp) {
+		pos.vx = -20*Math.sin(pos.r*Math.PI/180);
+		pos.vz = 20*Math.cos(pos.r*Math.PI/180);
+	}
+	
+	if (held.s || held.ArrowDown) {
+		pos.vx = 20*Math.sin(pos.r*Math.PI/180);
+		pos.vz = -20*Math.cos(pos.r*Math.PI/180);
+	}
+	
+	if (held.a || held.ArrowLeft) {
+		pos.vr = -4;
+	}
+	
+	if (held.d || held.ArrowRight) {
+		pos.vr = 4;
+	}
+	
+	pos.x += pos.vx;
+	pos.vx *= slip;
+	
+	pos.z += pos.vz;
+	pos.vz *= slip;
+	
+	if (playing && slip < 0.9090909090909090909) {
+		slip *= 1.0000263;
+	} else if (playing && opacity > 0) {
+		opacity -= 0.1;
+		root.style.setProperty('--opacity', `${opacity}%`);
+	}
+	
+	pos.r += pos.vr;
+	pos.r %= 360;
+	if (pos.r > 180) {
+		pos.r = pos.r - 360;
+	}
+	else if (pos.r < -180) {
+		pos.r = pos.r + 360;
+	}
+	pos.vr *= 0.6;
+	
+	Object.values(walls).forEach((wall) => {
+		
+		var len = Math.sqrt((wall.bz-wall.az)*(wall.bz-wall.az) + (wall.bx-wall.ax)*(wall.bx-wall.ax));
+		var r = ((wall.bx - wall.ax)*(pos.x-wall.ax) + (wall.bz - wall.az)*(pos.z - wall.az))/len
+		
+		if (r < 0) return;
+		if (r > len) return;
+		
+		var dist = Math.abs((wall.bz-wall.az)*pos.x - (wall.bx-wall.ax)*pos.z + wall.bx*wall.az - wall.bz*wall.ax) / len;
+		
+		if (dist < 60) {
+			pos.x += (60-dist) * (wall.bz - wall.az)/len;
+			pos.z += (60-dist) * (wall.ax - wall.bx)/len;
+		}
+	
+	});
+	
+	if (pos.z > -160 || pos.z < -1800)
+	if (pos.x > -2200 || pos.x < -4200) {
+		wallfc.style.visibility = 'visible';
+		walleg.style.visibility = 'visible';
+		wallpn.style.visibility = 'hidden';
+		walloq.style.visibility = 'hidden';
+		walls['fc'].ax = -4960;
+		walls['eg'].ax = -1960;
+		walls['pn'].az = -2060;
+		walls['oq'].az = 700;
+		
+	} else {
+		wallpn.style.visibility = 'visible';
+		walloq.style.visibility = 'visible';
+		wallfc.style.visibility = 'hidden';
+		walleg.style.visibility = 'hidden';
+		walls['fc'].ax = -1960;
+		walls['eg'].ax = -4480;
+		walls['pn'].az = 220;
+		walls['oq'].az = -2660;
+	}
+	
+	if (!flag1) {
+		if (pos.x > 340 && Math.abs(pos.r) < 45) {
+			flag1 = true;
+			document.getElementById('destroy').style.visibility = 'hidden';
+			walls['destroy'].ax = 520;
+		}
+	}
+	
+	//const debugoutput = document.getElementById('debug');
+	//debugoutput.innerHTML = `${pos.x}<br>${pos.z}<br>${pos.r}<br>${flag1} ${flag2}`//`w${held.w} a${held.a} s${held.s} d${held.d}`;
+	
+	world.style.transform = `rotateY(${pos.r}deg) translateX(${pos.x}px) translateZ(${pos.z}px)`
+	
+	if (pos.x < -6800 && pos.z > -2180) {
+		window.location.replace('/not_found.html');
+	}
+	
+	if (slip < 0.703 || (slip > 0.745 && slip < 0.748) || Math.sin(pulse_timer/pulse_speed) > -0.9) {
+		pulse_timer += 1;
+		
+		document.querySelectorAll('.key').forEach((element) => {
+			element.style.background = `rgb(${80 + 48*Math.sin(pulse_timer/pulse_speed)},${40 + 8*Math.sin(pulse_timer/pulse_speed)},${160 + 32*Math.sin(pulse_timer/pulse_speed)})`;
+			element.style.color = `rgb(${223 + 31*Math.sin(pulse_timer/pulse_speed)},0,192)`;
+			element.style.borderColor = `rgb(${56 + 40*Math.sin(pulse_timer/pulse_speed)},16,${112 + 16*Math.sin(pulse_timer/pulse_speed)})`;
+		});
+	}
+	
+	setTimeout(loop, 30);
+}
+
+document.addEventListener("keydown", (event) => {
+	if (event.key in held) {
+		held[event.key] = true;
+		
+		//if (!playing) {
+			//var audio = new Audio("audio/wallsfaded.mp3");
+			//audio.play(); playing = true;
+		//}
+	}
+});
+
+document.addEventListener("keyup", (event) => {
+	if (event.key in held) {
+		held[event.key] = false;
+	}
+});
+
+</script>
+<style>
+
+:root {
+	--opacity: 100%;
+}
+
+body {
+	background: black;
+	color: white;
+	margin: 0;
+	user-select: none;
+	cursor: default;
+}
+
+.screen3d {
+	font-family: 'Helvetica', sans-serif;
+	margin: auto;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	position: relative;
+	align-items: center;
+	justify-content: center;
+	display: flex;
+	
+	perspective: 500px;
+	perspective-origin: 50% 50%;
+}
+
+.wall {
+	background-image: url('images/walltile.png');
+	opacity: var(--opacity);
+}
+
+#world {
+	width: 0px;
+	height: 0px;
+	
+	align-items: center;
+	justify-content: center;
+	display: flex;
+	
+	transform-style: preserve-3d;
+	transform-origin: 0px 0px 500px;
+}
+
+#world > * {
+	position: absolute;
+}
+
+.key {
+	background: rgb(128,48,128);
+	color: rgb(255,0,192);
+	border: 10px inset rgb(96,16,96);
+}
+
+p {
+	margin: 15px auto;
+	text-shadow: 2px 2px black;
+}
+
+.writing {
+	color: #e0e0e0;
+	font-family: 'Verdana';
+	font-style: italic;
+	font-size: 20px;
+	display: block;
+	margin-top: 135px;
+}
+
+</style>
+<body>
+<div class="screen3d">
+<div id="jumpscare" style="height:100px; width:100px; background-color:red; background-image:url('images/v.png'); position:absolute;"></div>
+<div id="world">
+
+<p id="slip" style="width: 200px; transform: translateZ(-999px);"></p>
+
+<!--<div class="floor" style="height: 2000px; width: 2000px; transform: translateY(180px) rotateX(90deg);"></div>-->
+
+<div class="wall" style="height: 360px; width: 2000px; transform: translateX(240px) translateZ(0px) rotateY(-90deg);"></div>
+<div class="wall" style="height: 360px; width: 480px; transform: translateX(0px) translateZ(-1000px) rotateY(0deg);"></div>
+<div class="wall" style="height: 360px; width: 1520px; transform: translateX(-240px) translateZ(-240px) rotateY(-90deg);"></div>
+<div class="wall" style="height: 360px; width: 760px; transform: translateX(-140px) translateZ(1000px) rotateY(0deg);"></div>
+<div id="destroy" class="wall" style="height: 360px; width: 480px; transform: translateX(-760px) translateZ(1000px) rotateY(0deg);"></div>
+<div class="wall" style="height: 360px; width: 100px; transform: translateX(-290px) translateZ(520px) rotateY(0deg);"></div>
+<div class="wall" style="height: 360px; width: 1880px; transform: translateX(-760px) translateZ(1020px) rotateY(-90deg);"></div>
+<div class="wall" style="height: 360px; width: 420px; transform: translateX(-550px) translateZ(80px) rotateY(0deg);">
+	<div class="writing" style="margin-top: 95px;">
+		<p style="margin: 15px auto; width: 250px;">There is a world outside of these walls.</p>
+		<p style="margin: 15px auto; width: 250px;">Bathed in light and joy and <span style="font-weight: bold; color: #ff00ff;">L</span>ove you can't even understand.</p>
+		<p style="margin: 15px auto; width: 290px;">You have seen it in a dream.</p>
+	</div>
+</div>
+<div class="wall" style="height: 360px; width: 440px; transform: translateX(-340px) translateZ(300px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 100px; transform: translateX(-520px) translateZ(1050px) rotateY(-90deg);"></div>
+<div class="wall" style="height: 360px; width: 240px; transform: translateX(-400px) translateZ(1100px) rotateY(0deg);"></div>
+<div class="wall" style="height: 360px; width: 380px; transform: translateX(-280px) translateZ(1290px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 1520px; transform: translateX(0px) translateZ(1960px) rotateY(0deg);"></div>
+<div class="wall" style="height: 360px; width: 1040px; transform: translateX(240px) translateZ(1480px) rotateY(0deg);"></div>
+<div class="wall" style="height: 360px; width: 480px; transform: translateX(760px) translateZ(1240px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 480px; transform: translateX(1000px) translateZ(1000px) rotateY(0.0deg);"></div>
+<div class="wall" style="height: 360px; width: 2040px; transform: translateX(1240px) translateZ(2020px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 1116px; transform: translateX(1780px) translateZ(3180px) rotateY(-14.53445508054012deg);"></div>
+<div class="wall" style="height: 360px; width: 990px; transform: translateX(2440px) translateZ(2840px) rotateY(75.96375653207353deg);">
+	<div class="writing" style="margin-left: 500px;">
+		<p style="margin: 15px auto; width: 300px;">Some days it feels like these walls were made just for you.</p>
+		<p style="margin: 15px auto; width: 300px;">Others, you for the walls.</p>
+	</div>
+</div>
+<div class="wall" style="height: 360px; width: 981px; transform: translateX(3040px) translateZ(2460px) rotateY(-11.768288932020647deg);"></div>
+<div id="pn" class="wall" style="height: 360px; width: 2280px; transform: translateX(3520px) translateZ(1420px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 1080px; transform: translateX(2980px) translateZ(280px) rotateY(-0.0deg);"></div>
+<div class="wall" style="height: 360px; width: 1107px; transform: translateX(2560px) translateZ(-260px) rotateY(77.47119229084849deg);"></div>
+<div class="wall" style="height: 360px; width: 495px; transform: translateX(2440px) translateZ(-860px) rotateY(-14.036243467926477deg);"></div>
+<div class="wall" style="height: 360px; width: 990px; transform: translateX(2080px) translateZ(-440px) rotateY(75.96375653207353deg);"></div>
+<div class="wall" style="height: 360px; width: 1200px; transform: translateX(1960px) translateZ(640px) rotateY(90deg);">
+	<div class="writing">
+		<p style="text-shadow: -2px 2px black; margin: 15px auto; width: 300px;">Don't get your hopes up, kid.</p>
+		<p style="text-shadow: -2px 2px black; margin: 15px auto; width: 300px;">There is no grand escape.</p>
+	</div>
+</div>
+<div id="fc" class="wall" style="height: 360px; width: 3000px; transform: translateX(3460px) translateZ(1240px) rotateY(0.0deg);"></div>
+<div class="wall" style="height: 360px; width: 2160px; transform: translateX(4960px) translateZ(2320px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 1920px; transform: translateX(5920px) translateZ(3400px) rotateY(0.0deg);"></div>
+<div class="wall" style="height: 360px; width: 720px; transform: translateX(6880px) translateZ(3040px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 480px; transform: translateX(7120px) translateZ(2680px) rotateY(0.0deg);"></div>
+<div class="wall" style="height: 360px; width: 1440px; transform: translateX(760px) translateZ(2680px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 1980px; transform: translateX(1720px) translateZ(3640px) rotateY(165.96375653207352deg);"></div>
+<div class="wall" style="height: 360px; width: 990px; transform: translateX(2800px) translateZ(3400px) rotateY(75.96375653207353deg);"></div>
+<div class="wall" style="height: 360px; width: 1107px; transform: translateX(3460px) translateZ(3040px) rotateY(-12.528807709151511deg);"></div>
+<div id="oq" class="wall" style="height: 360px; width: 3360px; transform: translateX(4000px) translateZ(1480px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 960px; transform: translateX(3520px) translateZ(-200px) rotateY(0.0deg);"></div>
+<img src="images/evilpyramid.gif" style="opacity: var(--opacity); width: 240px; height: 180px; transform: translateX(3900px) translateZ(-80px) rotateY(-45deg);"></img>
+<div class="wall" style="height: 360px; width: 990px; transform: translateX(3160px) translateZ(-680px) rotateY(75.96375653207353deg);"></div>
+<div class="wall" style="height: 360px; width: 1485px; transform: translateX(2560px) translateZ(-1340px) rotateY(-14.036243467926477deg);"></div>
+<div class="wall" style="height: 360px; width: 1485px; transform: translateX(1660px) translateZ(-800px) rotateY(75.96375653207353deg);"></div>
+<div class="wall" style="height: 360px; width: 2280px; transform: translateX(1480px) translateZ(1060px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 480px; transform: translateX(1720px) translateZ(2200px) rotateY(-0.0deg);"></div>
+<img src="images/page.png" style="transform: translateX(1850px) translateZ(2100px) translateY(180px) rotateX(90deg) rotateZ(120deg);"></img>
+<div class="wall" style="height: 360px; width: 480px; transform: translateX(1960px) translateZ(1960px) rotateY(90deg);"></div>
+<div id="eg" class="wall" style="height: 360px; width: 2520px; transform: translateX(3220px) translateZ(1720px) rotateY(-0.0deg);"></div>
+<div class="wall" style="height: 360px; width: 2160px; transform: translateX(4480px) translateZ(2800px) rotateY(90deg);"></div>
+<div class="wall" style="height: 360px; width: 2880px; transform: translateX(5920px) translateZ(3880px) rotateY(180deg);">
+	<div class="writing">
+		<p style="margin: 15px auto; width: 400px;">This is what you've earned.</p>
+		<p style="margin: 15px auto; width: 400px;">What you really want.</p>
+		<p style="margin: 15px auto; width: 400px;">Fresh air will dry out your soft shell.</p>
+	</div>
+</div>
+<div class="wall" style="height: 360px; width: 1200px; transform: translateX(7360px) translateZ(3280px) rotateY(-90deg);"></div>
+<div style="background:black; height: 360px; width: 480px; transform: translateX(7120px) translateZ(2679px) rotateY(0deg);"></div>
+<div style="background:black; height: 360px; width: 480px; transform: translateX(7120px) translateZ(2200px) rotateY(0deg);"></div>
+<div style="background:black; height: 360px; width: 480px; transform: translateX(7360px) translateZ(2440px) rotateY(90deg);"></div>
+<div style="background:black; height: 360px; width: 480px; transform: translateX(6880px) translateZ(2440px) rotateY(90deg);"></div>
+<img src="images/dooropen2.gif" style="height: 360px; width: 230px; transform: translateX(7120px) translateZ(2681px) rotateY(0deg);"></img>
+
+</div> <!--world end-->
+
+<div style="height:100px; width:100px; position:absolute; left:0px; top:0px; font-size:100px; text-align:center; font-weight:bold; color:#ff00ff; text-shadow: 5px 5px black;">2</div>
+
+<div style="display:flex; flex-wrap: wrap; align-items: center; justify-content: space-around; height:140px; width:210px; position: absolute; margin: auto; bottom: 0px;">
+	<div style="height:70px; width:70px;"></div>
+	<div class="key" style="height:50px; width:50px; font-size:35px; line-height: 55px; text-align: center;">W</div>
+	<div style="height:70px; width:70px;"></div>
+	<div class="key" style="height:50px; width:50px; font-size:35px; line-height: 55px; text-align: center;">A</div>
+	<div class="key" style="height:50px; width:50px; font-size:35px; line-height: 55px; text-align: center;">S</div>
+	<div class="key" style="height:50px; width:50px; font-size:35px; line-height: 55px; text-align: center;">D</div>
+</div>
+
+<!--<div id="debug" style="height:80px; width:80px; background-color:none ; position:absolute; bottom: 0px; left: 0px;"></div>-->
+
+</div>
+<div id="player">
+	<audio id="bgmusic" class="random" autoplay loop src="/audio/wallsfaded.mp3"></audio>
+	<button id="play"><img src="/images/play.svg" /></button>
+	<button id="pause"><img src="/images/pause.svg" /></button>
+	<input type="range" id="volume" name="volume" min="0" max="1" value="1" step=".01" />
+	<img src="/images/vol.svg" />
+</div>
+</body>
+</html>

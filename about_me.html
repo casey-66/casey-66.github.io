@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>About Me</title>
+	<link rel="icon" href="/images/favicon.gif">
+	<link rel="stylesheet" href="/draw/draw-canvas.css">
+	<link rel="stylesheet" href="/draw/draw-toolbar.css">
+	<link rel="stylesheet" href="/style.css">
+</head>
+<script src="/draw/draw.js"></script>
+<body>
+	<div class="wrapper">
+		<div id="bg-left">
+			<canvas class="erasable pickable image vtile" data-src="/images/tile-left.png"></canvas>
+		</div>
+		<div id="bg-right">
+			<canvas class="erasable pickable image vtile" data-src="/images/tile-right.png"></canvas>
+		</div>
+		<div id="foreground-canvases"></div>
+		<div class="main">
+  		<a href="/">&lt;- back to home</a>
+
+			<h1>about me</h1>
+
+			<p>hiiiiiii! my name is casey ^w^ im 19 and my hobbies include playing video games reading wikipedia articles on bugs hanging out with my best friend jackie and being sillayyyyyy :3 :p i have lots of freckles that jackie says are really cute but i dont really see it maybe if it werent for the rest of my face bweh :b also i really wana become a game dev some day i have so many ideas bouncing around my head all the time its so hard to commit to finish one &gt;_&lt; ive been working on programing though and have some little games elsewhere on this website you should totally check out! hopefully once i make it big i can move out of my parents place :b everythings gonna be all right ^_^</p>
+
+			<div id="wall">
+				<h1>my wall of favorites!</h1>
+				<span class="anchor">
+					<a href="/hallway.html">
+			      <canvas class="erasable pickable image" style="top: -80px; left: -120px; pointer-events: all;" data-src="/images/about-me/simple_brick.png"></canvas>
+					</a>
+				</span>
+				<span class="anchor">
+		      <canvas class="erasable pickable image" style="top: -60px; left: 240px" data-src="/images/about-me/caseygreen.png"></canvas>
+				</span>
+				<h2>favorite color</h2>
+				<p>green</p>
+				<span class="anchor">
+		      <canvas class="erasable pickable image" style="top: 60px; left: 305px;" data-src="/images/about-me/cemtipede.png"></canvas>
+				</span>
+				<h2>favorite animal</h2>
+				<p>centipedes though jackie doesnt like when i talk about them</p>
+				<span class="anchor">
+		      <canvas class="erasable pickable image" style="top: 0px; left: 180px;" data-src="/images/about-me/walle.png"></canvas>
+				</span>
+				<h2>favorite movie</h2>
+				<p>wall-e</p>
+				<span class="anchor">
+		      <canvas class="erasable pickable image" style="top: 0px; left: -180px;" data-src="/images/about-me/omori_demon.png"></canvas>
+		      <canvas class="erasable pickable image" style="top: -80px; left: 500px;" data-src="/images/about-me/campfire.png"></canvas>
+		      <canvas class="erasable pickable image" style="top: -50px; left: 245px;" data-src="/images/about-me/this_thing.png"></canvas>
+		      <canvas class="erasable pickable image" style="top: 100px; left: 220px;" data-src="/images/about-me/mountain.png"></canvas>
+				</span>
+				<h2>favorite games</h2>
+				<p>omori, outer wilds, subnautica, celeste [i cant decide on one &gt;_&lt;]</p>
+				<h2>favorite music</h2>
+				video game osts lol
+			</div>
+
+      <br>
+
+			<div class="toolbar">
+				<div class="tools">
+					<button class="tool" id="eyedropper-button"><img src="/draw/images/toolbar/eyedropper.png"></button>
+					<button class="tool" id="eraser-button"><img src="/draw/images/toolbar/eraser.png"></button>
+					<button class="tool" id="pencil-button"><img src="/draw/images/toolbar/pencil.png"></button>
+					<button class="tool" id="brush-button"><img src="/draw/images/toolbar/brush.png"></button>
+				</div>
+				<div class="options">
+					<div class="brushes">
+						<button class="brush" id="brush-large-circle"><img src="/draw/images/toolbar/brush-large-circle.png"></button>
+						<button class="brush" id="brush-small-circle"><img src="/draw/images/toolbar/brush-small-circle.png"></button>
+						<button class="brush" id="brush-oblique"><img src="/draw/images/toolbar/brush-oblique.png"></button>
+						<button class="brush" id="brush-large-square"><img src="/draw/images/toolbar/brush-large-square.png"></button>
+						<button class="brush" id="brush-small-square"><img src="/draw/images/toolbar/brush-small-square.png"></button>
+						<button class="brush" id="brush-smaller-square"><img src="/draw/images/toolbar/brush-smaller-square.png"></button>
+					</div>
+				</div>
+				<div class="palette">
+					<input id="color-input" type="color" value="#FF00FF"></input>
+					<div class="color-preview"></div>
+				</div>
+			</div>			
+		</div>
+	</div>
+</body>
+</html>

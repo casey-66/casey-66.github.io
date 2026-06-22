@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>comforting glow</title>
+	<meta name="robots" content="noindex,nofollow">
+	<link rel="icon" href="/images/favicon.gif">
+	<link rel="stylesheet" href="/game_finished.css">
+	<link rel="stylesheet" href="/draw/draw-canvas.css">
+	<link rel="stylesheet" href="/draw/draw-toolbar.css">
+	<link rel="stylesheet" href="/style.css">
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_none.gif" />
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_a.gif" />
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_b.gif" />
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_x.gif" />
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_y.gif" />
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_l.gif" />
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_r.gif" />
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_u.gif" />
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_d.gif" />
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_start.gif" />
+	<link rel="preload" as="image" type="image/gif" href="/images/games/console_select.gif" />
+	<script src="/bgmusic.js"></script>
+	<script src="/console.js"></script>
+	<!-- <script src="/404.js"></script> -->
+</head>
+<body>
+
+  <h1 style="color: #0000ff; position: absolute; font-weight: bold; top: 20px; left: 20px; margin: 0;">5</h1>
+	<span class="console">
+		<button id="a" style="width: 30px; height: 30px; top: 333px; left: 367px;"></button>
+		<button id="b" style="width: 30px; height: 30px; top: 363px; left: 336px;"></button>
+		<button id="x" style="width: 30px; height: 30px; top: 303px; left: 336px;"></button>
+		<button id="y" style="width: 30px; height: 30px; top: 333px; left: 306px;"></button>
+		<button id="select" style="width: 55px; height: 20px; top: 413px; left: 204px;"></button>
+		<button id="start" style="width: 55px; height: 20px; top: 413px; left: 281px;"></button>
+		<button id="u" style="width: 25px; height: 40px; top: 305px; left: 184px;"></button>
+		<button id="d" style="width: 25px; height: 40px; top: 355px; left: 184px;"></button>
+		<button id="l" style="width: 40px; height: 25px; top: 337px; left: 149px;"></button>
+		<button id="r" style="width: 40px; height: 25px; top: 337px; left: 205px;"></button>
+		<p id="text" style="width: 200px; height: 76px; top: 140px; left: 171px;"></p>
+		<img class="pixelated" id="i" style="width: 540px;" src="/images/games/console_none.gif" />
+	</span>
+
+	<div id="player">
+		<audio id="bgmusic" autoplay loop src="/audio/comforting glow.mp3"></audio>
+		<button id="play"><img src="/images/play.svg" /></button>
+		<button id="pause"><img src="/images/pause.svg" /></button>
+		<input type="range" id="volume" name="volume" min="0" max="1" value="1" step=".01" />
+		<img src="/images/vol.svg" />
+	</div>
+</body>
+</html>

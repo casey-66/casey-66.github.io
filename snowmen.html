@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>snowmen</title>
+	<meta name="robots" content="noindex,nofollow">
+	<link rel="icon" href="/images/favicon.gif">
+	<link rel="stylesheet" href="/snowmen.css">
+	<link rel="stylesheet" href="/draw/draw-canvas.css">
+	<link rel="stylesheet" href="/draw/draw-toolbar.css">
+	<link rel="stylesheet" href="/style.css">
+	<script src="/draw/draw.js"></script>
+	<script src="/bgmusic.js"></script>
+	<script src="/404.js"></script>
+</head>
+<body>
+
+	<div id="container">
+		<img class="pixelated" src="/images/hidden_page/snowpark.png" />
+		<img src="/images/hidden_page/snowpark_text.png" />
+		<canvas class="erasable pickable drawable image" data-scale="2" data-src="/images/hidden_page/fucked_up_snowmen.png"></canvas>
+		<img class="pixelated" src="/images/hidden_page/snowpark_snowing.gif" />
+	</div>
+
+	<div class="toolbar">
+		<div class="tools">
+			<button class="tool" id="eyedropper-button"><img src="/draw/images/toolbar/eyedropper.png"></button>
+			<button class="tool" id="eraser-button"><img src="/draw/images/toolbar/eraser.png"></button>
+			<button class="tool" id="pencil-button"><img src="/draw/images/toolbar/pencil.png"></button>
+			<button class="tool" id="brush-button"><img src="/draw/images/toolbar/brush.png"></button>
+		</div>
+		<div class="options">
+			<div class="brushes">
+				<button class="brush" id="brush-large-circle"><img src="/draw/images/toolbar/brush-large-circle.png"></button>
+				<button class="brush" id="brush-small-circle"><img src="/draw/images/toolbar/brush-small-circle.png"></button>
+				<button class="brush" id="brush-oblique"><img src="/draw/images/toolbar/brush-oblique.png"></button>
+				<button class="brush" id="brush-large-square"><img src="/draw/images/toolbar/brush-large-square.png"></button>
+				<button class="brush" id="brush-small-square"><img src="/draw/images/toolbar/brush-small-square.png"></button>
+				<button class="brush" id="brush-smaller-square"><img src="/draw/images/toolbar/brush-smaller-square.png"></button>
+			</div>
+		</div>
+		<div class="palette">
+			<input id="color-input" type="color" value="#FF00FF"></input>
+			<div class="color-preview"></div>
+		</div>
+	</div>
+
+	<div id="player">
+		<audio id="bgmusic" class="random" autoplay loop src="/audio/snowmen.mp3"></audio>
+		<button id="play"><img src="/images/play.svg" /></button>
+		<button id="pause"><img src="/images/pause.svg" /></button>
+		<input type="range" id="volume" name="volume" min="0" max="1" value="1" step=".01" />
+		<img src="/images/vol.svg" />
+	</div>
+</body>
+</html>

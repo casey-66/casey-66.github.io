@@ -1,0 +1,203 @@
+:root {
+	--content-width: 1600px;
+}
+
+body {
+	background: black;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	height: 100%;
+	font-family: 'Courier New', monospace;
+	color: red;
+	margin: 0;
+}
+
+a {
+	color: red;
+}
+
+.wrapper {
+	width: 100%;
+	overflow: hidden;
+	max-width: var(--content-width);
+	display: grid;
+	grid-template-columns: 0 1fr minmax(0,200px) min(500px, 90vw) minmax(0,200px) 1fr;
+	/* grid-column-gap: 200px; */
+	grid-template-rows: minmax(0,1fr);
+}
+
+.main {
+	font-family: 'Courier New', monospace;
+	line-height: 1.4em;
+	margin: 0;
+	padding: 20px 0;
+	align-self: start;
+	grid-row: 1;
+	grid-column: 4;
+}
+
+
+h1 {
+	margin-top: 75px;
+	font-weight: normal;
+	/* text-align: center; */}
+
+h2 {
+	margin-top: 50px;
+	font-weight: normal;
+	/* text-align: center; */
+}
+
+.update {
+	margin: auto;
+	/* max-width: 440px; */
+}
+
+.update mark {
+	padding: 0.1em 0.6em;
+	background-color: black;
+	color: #ff60ff;
+}
+
+.update .bracket {
+	color: #ff0000;
+}
+
+.blog-nav {
+	display: flex;
+	justify-content: space-between;
+	margin: 1em 0;
+}
+
+.center {
+  width: 100%;
+  text-align: center;
+}
+
+.deadlink {
+	cursor: default;
+}
+
+.archive {
+	text-align: center;
+}
+
+.archive ul {
+	/* we make the ul inline-block so that we can center it while still having the text inside be left-aligned */
+	display: inline-block;
+	/* however, this means the margins we give li don't collapse with margins outside ul. */
+	/* so we account for this with negative margins */
+	margin: -1em 0;
+	text-align: left;
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+	/* text-align: left; */
+}
+
+li {
+	margin: 1em 0;
+}
+
+audio {
+	width: 100%;
+}
+
+.toolbar {
+	margin: auto;
+}
+
+#player {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  right: 20px;
+  top: 20px;
+  padding: 20px 30px;
+  font-size: 40px;
+  line-height: 200%;
+  background: #e2e2e2;
+  cursor: default;
+}
+
+#player input {
+  width: 100px;
+}
+
+#player img {
+	width: 25px;
+}
+
+#player button {
+	background: none;
+	border: none;
+}
+
+
+.bio {
+	margin: auto;
+	width: 360px;
+	display: flex;
+	align-items: center;
+	text-align: center;
+}
+
+.bio p {
+	margin: auto;
+}
+
+.bio img {
+	margin-top: 30px;
+}
+
+#draw {
+	width: 500px;
+	height: 500px;
+	background: black;
+}
+
+.gallery > img {
+	/* width: 500px; */
+	margin-top: 50px;
+}
+
+.credits {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100vw;
+	height: 100vh;
+}
+
+.select-wrapper img {
+	/* background-color: #ff000066; */
+	position: absolute;
+	/* top: 0; */
+	/* left: 0; */
+	left: 0;
+}
+
+.select-wrapper div {
+	position: absolute;
+	width: 48px;
+	height: 48px;
+	font-size: 42px;
+	top: 12px;
+	letter-spacing: 20px;
+}
+
+.select-wrapper {
+	width: 48px;
+	height: 48px;
+	position: relative;
+	margin: auto;
+}
+
+.select-wrapper div::selection {
+	background-color: white;
+	color: transparent;
+}

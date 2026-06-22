@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Casey's Website</title>
+	<link rel="icon" href="/images/favicon.gif">
+	<link rel="stylesheet" href="/draw/draw-canvas.css">
+	<link rel="stylesheet" href="/draw/draw-toolbar.css">
+	<link rel="stylesheet" href="/style.css">
+</head>
+<script src="/draw/draw.js"></script>
+<body>
+	<div class="wrapper">
+		<div id="bg-left">
+			<canvas class="erasable pickable image vtile" data-src="/images/tile-left.png"></canvas>
+		</div>
+		<div id="bg-right">
+			<canvas class="erasable pickable image vtile" data-src="/images/tile-right.png"></canvas>
+		</div>
+		<div id="foreground-canvases"></div>
+		<div class="main">
+			<h1>February 16th</h1>
+			<!-- <div class="entry"> -->
+        im sorry
+				<nav class="blog-nav">
+          <a href="/blog/feb-14">← prev</a>
+					<a href="/blog">back to archive</a>
+          <a></a>
+				</nav>
+			<!-- </div> -->
+			
+			<div class="toolbar">
+				<div class="tools">
+					<button class="tool" id="eyedropper-button"><img src="/draw/images/toolbar/eyedropper.png"></button>
+					<button class="tool" id="eraser-button"><img src="/draw/images/toolbar/eraser.png"></button>
+					<button class="tool" id="pencil-button"><img src="/draw/images/toolbar/pencil.png"></button>
+					<button class="tool" id="brush-button"><img src="/draw/images/toolbar/brush.png"></button>
+				</div>
+				<div class="options">
+					<div class="brushes">
+						<button class="brush" id="brush-large-circle"><img src="/draw/images/toolbar/brush-large-circle.png"></button>
+						<button class="brush" id="brush-small-circle"><img src="/draw/images/toolbar/brush-small-circle.png"></button>
+						<button class="brush" id="brush-oblique"><img src="/draw/images/toolbar/brush-oblique.png"></button>
+						<button class="brush" id="brush-large-square"><img src="/draw/images/toolbar/brush-large-square.png"></button>
+						<button class="brush" id="brush-small-square"><img src="/draw/images/toolbar/brush-small-square.png"></button>
+						<button class="brush" id="brush-smaller-square"><img src="/draw/images/toolbar/brush-smaller-square.png"></button>
+					</div>
+				</div>
+				<div class="palette">
+					<input id="color-input" type="color" value="#000000"></input>
+					<div class="color-preview"></div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</body>
+</html>
